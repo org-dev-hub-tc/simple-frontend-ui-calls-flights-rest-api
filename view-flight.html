@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Person CRUD REST API Test UI</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="resources/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="resources/css/style.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row header">
+                <div>View Person</div>
+            </div>
+            <div class="row content-section">
+                <div class="col-sm-2 nav-col">
+                    <span class="parent-menu"><a href="index.html">Person</a></span>
+                    <ul class="menu-item">
+                        <li><a href="create-person.html" class="active">Create Person</a></li>
+                        <li><a href="all-persons.html">All Persons</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-10" id="persons">
+                    <div class="row content">
+                        <h3>Person details</h3>
+                        <div class="row" id="person-form">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-4">First Name </div>
+                                        <div class="col-sm-8">{{firstName}}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-4">Last Name </div>
+                                        <div class="col-sm-8">{{lastName}}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-4">Age </div>
+                                        <div class="col-sm-8">{{age}} </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-4">Favourite Colour </div>
+                                        <div class="col-sm-8">{{favouriteColour}} </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-4">Hobby </div>
+                                        <div class="col-sm-8">{{hobby}}</div>
+                                    </div>
+                                </div>
+                                <div class=" col-sm-offset-5 col-sm-5">
+                                    <input class="btn btn-warning" type="button" @click="cancelUpdate" value="Back"/>
+                                    <input class="btn btn-primary" type="button" @click="editPerson" value="Edit"/>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="row text-center" v-if="errorMsg.length > 0">
+                        <label class="label-danger">{{errorMsg}}</label>
+                    </div>
+                    <div class="row text-center" v-if="successMsg.length > 0">
+                        <label class="label-success">{{successMsg}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <footer>
+                    <div class="col-sm-12">
+                        <p>Designed a simple UI for Person REST Test without using any template</p>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script type="text/javascript" src="resources/js/common.js"></script>
+        <script type="text/javascript" src="resources/js/vue.js"></script>
+        <script type="text/javascript" src="resources/js/axios.min.js"></script>
+        <script type="text/javascript">
+            var vm = new Vue({
+                el : "#persons",
+                data : {
+                    personId : "",
+                    firstName : "",
+                    lastName : "",
+                    age : "",
+                    favouriteColour : "",
+                    hobby : "",
+                    createAnother : "",
+                    loading : false,
+                    errorMsg : "",
+                    successMsg : ""
+                },
+                mounted : function(){
+                    this.personId = new URL(location.href).searchParams.get('id');
+                    this.loading = true;
+                    axios
+                        .get(API_BASE_URL+'/persons/'+this.personId,axiosConfig)
+                        .then(response => {
+                            if(response.status === 200){
+                                var person = response.data;
+                                this.firstName = person.firstName;
+                                this.lastName = person.lastName;
+                                this.age = person.age;
+                                this.favouriteColour = person.favouriteColour;
+                                this.hobby = person.hobby.toString();
+                            }else{
+                                this.errorMsg = "Something went wrong please try again";
+                            }
+                        })
+                        .catch(error => {
+                          console.log(error);
+                        })
+                        .finally(() => this.loading = false)
+                },
+                methods : {
+                    cancelUpdate : function(){
+                        window.location.href="all-persons.html";
+                    },
+                    editPerson : function(){
+                        window.location.href="edit-person.html?id="+this.personId;
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

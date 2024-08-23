@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Person CRUD REST API Test UI</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="resources/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="resources/css/style.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row header">
+                <div>All Persons</div>
+            </div>
+            <div class="row content-section">
+                <div class="col-sm-2 nav-col">
+                    <span class="parent-menu"><a href="index.html">Person</a></span>
+                    <ul class="menu-item">
+                        <li><a href="create-person.html">Create Person</a></li>
+                        <li><a href="all-persons.html" class="active">All Persons</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-10" id="persons">
+                    <div class="row content">
+                        <table id="persons-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Age</th>
+                                    <th>Favourite Colour</th>
+                                    <th>Hobby</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="persons.length > 0" v-for = "(person,index) in persons">
+                                    <td>{{person.id}}</td>
+                                    <td>{{person.firstName}}</td>
+                                    <td>{{person.lastName}}</td>
+                                    <td>{{person.age}}</td>
+                                    <td>{{person.favouriteColour}}</td>
+                                    <td>
+                                        <ul v-if="person.hobby.length > 0" class="pl-10">
+                                            <li v-for="hobby in person.hobby" class="capitalize">{{hobby}}</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <a v-bind:href="'view-person.html?id='+person.id">view</a>&nbsp;|
+                                        <a v-bind:href="'edit-person.html?id='+person.id">edit</a>&nbsp;|&nbsp;<a href="javascript:void(0)" @click="deletePerson(index)">del</a>
+                                    </td>
+                                </tr>
+                                <tr v-show="loading">
+                                    <td colspan="7" class="text-center black">Plz wait we are processing...</td>
+                                </tr>
+                                <tr v-show="persons.length == 0">
+                                    <td colspan="7" class="text-center black">No persons available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row text-center" v-if="errorMsg.length > 0">
+                        <label class="label-danger">{{errorMsg}}</label>
+                    </div>
+                    <div class="row text-center" v-if="successMsg.length > 0">
+                        <label class="label-success">{{successMsg}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <footer>
+                    <div class="col-sm-12">
+                        <p>Designed a simple UI for Person REST Test without using any template</p>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script type="text/javascript" src="resources/js/common.js"></script>
+        <script type="text/javascript" src="resources/js/vue.js"></script>
+        <script type="text/javascript" src="resources/js/axios.min.js"></script>
+        <script type="text/javascript">
+            var vm = new Vue({
+                el : "#persons",
+                data : {
+                    persons : [],
+                    loading : false,
+                    errorMsg : "",
+                    successMsg : ""
+                },
+                mounted: function () {
+                    this.loading = true;
+                    axios
+                        .get(API_BASE_URL+'/persons',axiosConfig)
+                        .then(response => {
+                            if(response.status === 200){
+                                this.persons = response.data;
+                            }else{
+                                this.persons = [];
+                                this.errorMsg = "Something went wrong please try again";
+                            }
+                        })
+                        .catch(error => {
+                          console.log(error);
+                        })
+                        .finally(() => this.loading = false)
+                },
+                methods : {
+                    deletePerson : function(arrayIndex){
+                        this.successMsg = this.errorMsg = "";
+                        var personId = this.persons[arrayIndex].id;
+                        if(personId > 0){
+                            var con = confirm("Are you sure to delete it?");
+                            if(con){
+                                axios
+                                .delete(API_BASE_URL+'/persons/'+personId,axiosConfig)
+                                .then(response => {
+                                    if(response.status === 200){
+                                        this.successMsg = "Person data successfully deleted";
+                                        this.persons.splice(arrayIndex,1);
+                                    }else{
+                                        this.errorMsg = response.data.message;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log(error.response);
+                                    console.log(error);
+                                   this.errorMsg = error.response.data.message +". "+ error.response.data.errors.toString();
+                                })
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

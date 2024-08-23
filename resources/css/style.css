@@ -1,0 +1,42 @@
+.container{
+    background:gray;
+    color: #FFF;
+}
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    background-color:#d2d7c3e3;
+}
+.header{
+    padding: 15px 0px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 22px;
+    border-bottom: 1px solid #FFF;
+}
+.content-section{min-height: 530px}
+.nav-col{
+    background: #245269;
+    padding: 20px 5px;
+}
+.menu-item{list-style: none}
+.menu-item li{
+    padding: 10px 5px;
+}
+.menu-item li a{
+    font-size: 16px;
+    color: #FFF;
+}
+a{color: #FFF}
+.menu-item li a.active,a.active{color: yellow}
+.pl-0{padding-left: 0}
+.pl-10{padding-left: 10px;}
+.parent-menu{
+    font-size: 18px;
+}
+.content{padding: 20px}
+#persons-table tbody{color:#000}
+.black{color: #000}
+.red{color: red}
+footer{height: 40px;border-top: 1px solid #FFF;text-align: center}
+.capitalize{text-transform: capitalize}
+#person-form{border: 1px solid #ffffff;padding: 20px;}
+#person-form label{padding-top: 12px;}
